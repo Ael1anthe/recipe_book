@@ -1,0 +1,38 @@
+version: "3"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app/app
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "7000:80"
+
+  db:
+    image: postgres:16
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+  pgadmin:
+    build:
+      context: .
+      dockerfile: pgadmin.dockerfile
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "7003:5050"
+
+volumes:
+  app-db-data:
+
