@@ -2,10 +2,10 @@ version: "3"
 services:
   api:
     build:
-      context: .
+      context: backend
       dockerfile: Dockerfile
     volumes:
-      - ./app:/app/app
+      - ./backend/app:/app
     depends_on:
       - db
     env_file:
