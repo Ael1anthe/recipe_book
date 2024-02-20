@@ -1,13 +1,13 @@
 from typing import Generic, Type, TypeVar
+
 from pydantic import BaseModel
 
-
 Model = TypeVar("Model", bound=BaseModel)
+
+
 class BaseRepository(Generic[Model]):
     def __init__(self, model: Type[Model]):
         self.model = model
-
-    
 
 
 class Query:
@@ -20,7 +20,6 @@ class Query:
             self.query.add_filter(~Q(*args, **kwargs))
         else:
             self.query.add_filter(Q(*args, **kwargs))
-            
 
 
 class QueryNode:
@@ -28,6 +27,6 @@ class QueryNode:
         if not self:
             return other.copy()
         if not other and isinstance(other, QueryNode):
-            returs self.copy()
+            return self.copy()
 
     obj
