@@ -1,20 +1,20 @@
 from datetime import timedelta
 from typing import Annotated
+
 from fastapi import FastAPI, status
 from fastapi.param_functions import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.exceptions import HTTPException
 from strawberry.fastapi import GraphQLRouter
+
 from src.auth.main import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_user,
     create_access_token,
+    get_current_user,
 )
 from src.auth.models import Token, User
-from src.auth.main import get_current_user
-
 from src.gql.schema import schema
-
 
 graphql_app: GraphQLRouter = GraphQLRouter(schema)
 

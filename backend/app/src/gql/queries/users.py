@@ -1,8 +1,10 @@
-from typing import List, Optional
+from typing import List
+
 import strawberry
 
-from src.gql.scalars.users import User
 from src.gql.resolvers import users as users_resolver
+from src.gql.scalars.users import User
+
 
 @strawberry.type
 class UsersQuery:

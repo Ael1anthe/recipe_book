@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
-from passlib.context import CryptContext
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 from src.auth.models import TokenData
 from src.database import get_user
@@ -36,6 +37,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 async def authenticate_user(username: str, password: str):
     user = await get_user(username)
     if not user:
@@ -43,6 +45,7 @@ async def authenticate_user(username: str, password: str):
     if not verify_password(password, user.pwd_hash):
         return False
     return user
+
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(

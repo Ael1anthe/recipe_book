@@ -1,6 +1,7 @@
 import asyncio
-import strawberry
 from typing import AsyncGenerator
+
+import strawberry
 
 
 @strawberry.type

@@ -1,12 +1,13 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Optional
-from sqlalchemy import Table, Column, ForeignKey, select
+
+from sqlalchemy import Column, ForeignKey, Table, select
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio.session import AsyncAttrs, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
-from src.auth.models import DBUser
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
+from src.auth.models import DBUser
 from src.config import SETTINGS
 
 if SETTINGS.DATABASE_URL:
@@ -60,6 +61,7 @@ class Group(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True)
     members: Mapped[list["User"]] = relationship(secondary=users_groups)
+
 
 async def get_user(username: str) -> Optional[DBUser]:
     async with get_session() as s:

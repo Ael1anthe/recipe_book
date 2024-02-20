@@ -1,5 +1,7 @@
 import strawberry
+
 from src.gql.queries.users import UsersQuery
+
 
 @strawberry.type
 class Query:

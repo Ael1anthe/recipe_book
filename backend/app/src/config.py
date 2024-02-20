@@ -1,4 +1,5 @@
 from typing import Any, Optional
+
 from pydantic import PostgresDsn, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 from pydantic_settings import BaseSettings
