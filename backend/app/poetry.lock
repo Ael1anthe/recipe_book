@@ -1279,6 +1279,17 @@ files = [
 ]
 
 [[package]]
+name = "result"
+version = "0.16.1"
+description = "A Rust-like result type for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "result-0.16.1-py3-none-any.whl", hash = "sha256:47598bb9bde342251f5b0f49e3637cd30dc144c086b29dc58fff458477650669"},
+    {file = "result-0.16.1.tar.gz", hash = "sha256:379f0233cdf8cf157588c77bb2ab1ac367431d9bf6e8456a336b026d528cee0d"},
+]
+
+[[package]]
 name = "rsa"
 version = "4.9"
 description = "Pure-Python RSA implementation"
@@ -1791,4 +1802,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "64ad07d371d7512e2b84b01ba699df44f2f031bad430c4d0b4fc727f8bd38df8"
+content-hash = "570d1fdf4aee4aa94c5f6d6f1a5572afaa5f55824ceacf2d19b1b9191dd9747d"
