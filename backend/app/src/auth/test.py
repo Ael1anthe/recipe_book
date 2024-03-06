@@ -1,4 +1,4 @@
-from src.auth import roles, permissions, policies
+from src.auth import permissions, policies, roles
 
 
 class User(roles.AuthorisationMixin):
@@ -12,8 +12,7 @@ class Post:
     def __init__(self, title: str, owner: User) -> None:
         self.title: str = title
         self.owner: User = owner
-        self.shared_users : list[User] = []
-        
+        self.shared_users: list[User] = []
 
 
 class PostPolicy(policies.BasePolicy):
@@ -37,6 +36,10 @@ def start_test() -> None:
     guest_role = roles.Role("guest")
     admin_role = roles.Role("admin")
 
+    def my_rule(u: User) -> bool:
+        return u.login == "mathias"
+
+    new_rule = policies.Rule(name="my_rule", rule=my_rule)
     admin_role.permissions.append(edit_post)
     admin_role.permissions.append(view_post)
 

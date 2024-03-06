@@ -31,6 +31,7 @@ class AuthorisationMixin:
         )
 
 
+test = AuthorisationMixin()
 # class UserRoles:
 #     """User roles manager"""
 #     _roles: list[Role] = []
