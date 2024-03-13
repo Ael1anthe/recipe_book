@@ -18,12 +18,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -40,9 +40,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 async def authenticate_user(username: str, password: str):
     user = await get_user(username)
-    if not user:
-        return False
-    if not verify_password(password, user.pwd_hash):
+    if not user or not verify_password(password, user.pwd_hash):
         return False
     return user
 
@@ -60,8 +58,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
             raise credentials_exception
 
         token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
+    except JWTError as execpt:
+        raise credentials_exception from execpt
     user = await get_user(username=token_data.username)
     if user is None:
         raise credentials_exception
