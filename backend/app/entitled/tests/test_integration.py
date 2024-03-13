@@ -1,7 +1,8 @@
+import typing
+
 from result import result
 
 from entitled import permissions, policies, roles, rules
-from entitled.rules import Rule
 
 
 class User(roles.AuthMixin):
@@ -40,7 +41,7 @@ def test() -> None:
     user2.roles.add(guest_role)
     user3.roles.add(admin_role)
 
-    post = Post(title="New Post", owner=user1)
+    new_post = Post(title="New Post", owner=user1)
 
     def user_is_admin(user: User, *args):
         if roles.Role("admin") in user.roles:
@@ -51,31 +52,35 @@ def test() -> None:
     class PostPolicy(policies.Policy):
         @classmethod
         @policies.register("post:create")
-        def create(cls, user: User) -> bool:
-            return user.has_perm("post:create")
+        def create(
+            cls, actor: User, resource: typing.Optional[Post] = None, **context
+        ) -> bool:
+            return actor.has_perm("post:create")
 
         @classmethod
         @policies.register("post:view")
-        def view(cls, user: User, post: Post) -> bool:
-            return user.has_perm("post:view") and (
-                post.owner == user or user in post.shared_users
+        def view(cls, actor: User, resource: Post, **context) -> bool:
+            return actor.has_perm("post:view") and (
+                resource.owner == actor or actor in resource.shared_users
             )
 
         @classmethod
         @policies.register("post:edit")
-        def edit(cls, user: User, post: Post) -> bool:
-            return user.has_perm("post:edit") and post.owner == user
+        def edit(cls, actor: User, resource: Post, **context) -> bool:
+            return actor.has_perm("post:edit") and resource.owner == actor
 
     assert PostPolicy.authorize("create", user1) == result.Ok(True)
-    assert PostPolicy.authorize("view", user1, post) == result.Ok(True)
-    assert PostPolicy.authorize("edit", user1, post) == result.Ok(True)
+    assert PostPolicy.authorize("view", user1, new_post) == result.Ok(True)
+    assert PostPolicy.authorize("edit", user1, new_post) == result.Ok(True)
 
     assert PostPolicy.authorize("create", user2) == result.Ok(False)
-    assert PostPolicy.authorize("view", user2, post) == result.Ok(False)
-    post.shared_users.append(user2)
-    assert PostPolicy.authorize("view", user2, post) == result.Ok(True)
-    assert PostPolicy.authorize("edit", user2, post) == result.Ok(False)
+    assert PostPolicy.authorize("view", user2, new_post) == result.Ok(False)
+    new_post.shared_users.append(user2)
+    assert PostPolicy.authorize("view", user2, new_post) == result.Ok(True)
+    assert PostPolicy.authorize("edit", user2, new_post) == result.Ok(False)
 
     assert PostPolicy.authorize("create", user3) == result.Ok(True)
-    assert PostPolicy.authorize("view", user3, post) == result.Ok(True)
-    assert PostPolicy.authorize("edit", user3, post) == result.Ok(True)
+    assert PostPolicy.authorize("view", user3, new_post) == result.Ok(True)
+    assert PostPolicy.authorize("edit", user3, new_post) == result.Ok(True)
+
+    print(PostPolicy.check_all(user2, new_post, **{}))

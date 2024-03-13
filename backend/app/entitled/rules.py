@@ -1,12 +1,16 @@
 """Defines Rule objects"""
 
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 from result import Err, Ok, Result
 
 
 class RuleAlreadyExists(BaseException):
     """Raised if a rule with the given name already exists"""
+
+
+class RuleSignature(Protocol):
+    def __call__(self, cls: type, actor, resource, **context) -> bool: ...
 
 
 class Rule:
@@ -18,13 +22,13 @@ class Rule:
     def __init__(
         self,
         name: str,
-        rule: Callable[..., bool],
+        rule: RuleSignature,
     ) -> None:
         self.name = name
         self.rule = rule
 
     @classmethod
-    def create(cls, name: str, rule: Callable[..., bool]) -> Result["Rule", str]:
+    def create(cls, name: str, rule: RuleSignature) -> Result["Rule", str]:
         """Instanciate a new rule"""
         return cls.register(Rule(name, rule))
 
@@ -51,24 +55,28 @@ class Rule:
     def set_precheck(cls, check: Callable[..., Optional[bool]]) -> None:
         cls._pre_check = check
 
-    def allows(self, *args, **kwargs) -> bool:
+    def allows(self, actor: str, resource: Optional[Any] = None, **context) -> bool:
         """Determines where the target satisfies this rule"""
-        pre_check = Rule._pre_check(*args, **kwargs)
+        pre_check = Rule._pre_check(actor, resource, **context)
         if pre_check is not None:
             return pre_check
 
-        return self.rule(*args, **kwargs)
+        return self.rule(actor, resource, **context)
 
     @classmethod
-    def check(cls, rule: str, *args, **kwargs) -> bool:
+    def check(
+        cls, rule: str, actor: Any, resource: Optional[Any] = None, **context
+    ) -> bool:
         """Looks up for a given rule name and calls it if possible"""
         rule_object = cls.get(rule)
         if not rule_object:
             return False
 
-        return rule_object.allows(*args, **kwargs)
+        return rule_object.allows(actor, resource, **context)
 
     @classmethod
-    def any(cls, rules: List[str], *args, **kwargs) -> bool:
+    def any(
+        cls, rules: List[str], actor: Any, resource: Optional[Any] = None, **context
+    ) -> bool:
         """Determines whether the target satisfies any of the given rules"""
-        return any(cls.check(rule, *args, **kwargs) for rule in rules)
+        return any(cls.check(rule, actor, resource, **context) for rule in rules)

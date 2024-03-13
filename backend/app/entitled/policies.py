@@ -20,7 +20,7 @@ class PolicyMeta(type):
 
 
 def register(*labels: str):
-    def _register(func: typing.Callable[..., bool]):
+    def _register(func: rules.RuleSignature):
         _labels: typing.Tuple = labels if labels else (func.__name__,)
         setattr(func, "_registerable", True)
         setattr(func, "_labels", _labels)
@@ -33,11 +33,28 @@ class Policy(metaclass=PolicyMeta):
     """Base class for defining policies"""
 
     @classmethod
-    def authorize(cls, rule: str, *args, **kwargs) -> result.Result[bool, str]:
+    def authorize(
+        cls,
+        rule: str,
+        actor: typing.Any,
+        resource: typing.Optional[typing.Any] = None,
+        **context,
+    ) -> result.Result[bool, str]:
         """Looks up a given rule and applies it to the given parameter"""
         if rule in cls.__dict__["_registry"]:
             return result.Ok(
-                rules.Rule.check(f"{cls.__name__}.{rule}", *args, **kwargs)
+                rules.Rule.check(f"{cls.__name__}.{rule}", actor, resource, **context)
             )
 
         return result.Err("Rule does not exist")
+
+    @classmethod
+    def check_all(
+        cls, actor: typing.Any, resource: typing.Optional[typing.Any] = None, **context
+    ) -> dict[str, bool]:
+        res: dict[str, bool] = {}
+        for rule in cls.__dict__["_registry"]:
+            res[rule] = rules.Rule.check(
+                f"{cls.__name__}.{rule}", actor, resource, **context
+            )
+        return res
