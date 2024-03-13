@@ -25,12 +25,15 @@ class Permission:
         return hash(repr(self))
 
 
-class PermissionSet(Set[Permission]):
-    def __contains__(self, __o: object) -> bool:
-        match __o:
-            case str():
-                return super().__contains__(Permission(__o))
-            case Permission():
-                return super().__contains__(__o)
-            case _:
-                return False
+class PermissionMixin:
+    def __init__(self) -> None:
+        self._permissions: Set[Permission] = set()
+
+    @property
+    def permissions(self) -> Set[Permission]:
+        """Returns this objects permissions"""
+        return self._permissions
+
+    @permissions.setter
+    def permissions(self, perms_set: Set[Permission]):
+        self._permissions = perms_set

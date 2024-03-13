@@ -19,13 +19,18 @@ class PolicyMeta(type):
                 cls.__dict__["_registry"].add(attr_name)
 
 
+def register(*labels: str):
+    def _register(func: typing.Callable[..., bool]):
+        _labels: typing.Tuple = labels if labels else (func.__name__,)
+        setattr(func, "_registerable", True)
+        setattr(func, "_labels", _labels)
+        return func
+
+    return _register
+
+
 class Policy(metaclass=PolicyMeta):
     """Base class for defining policies"""
-
-    @classmethod
-    def register(cls, func: typing.Callable):
-        setattr(func, "_registerable", True)
-        return func
 
     @classmethod
     def authorize(cls, rule: str, *args, **kwargs) -> result.Result[bool, str]:

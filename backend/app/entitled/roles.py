@@ -3,14 +3,14 @@ from typing import Set
 from entitled import permissions as perms
 
 
-class Role:
+class Role(perms.PermissionMixin):
     """Base Role class"""
 
     __match_args__ = "name"
 
     def __init__(self, name: str) -> None:
+        super().__init__()
         self.name = name
-        self.permissions: Set[perms.Permission] = set()
 
     def __eq__(self, obj: object) -> bool:
         match obj:
@@ -28,12 +28,21 @@ class Role:
         return hash(repr(self))
 
 
-class RoleSet(Set[Role]):
-    def __contains__(self, __o: object) -> bool:
-        match __o:
+class AuthMixin(perms.PermissionMixin):
+    def __init__(self) -> None:
+        super().__init__()
+        self.roles: Set[Role] = set[Role]()
+
+    def has_perm(self, permission: str | perms.Permission) -> bool:
+        """Return the user's permissions"""
+        match permission:
             case str():
-                return super().__contains__(perms.Permission(__o))
-            case Role():
-                return super().__contains__(__o)
+                _permission = perms.Permission(permission)
+            case perms.Permission():
+                _permission = permission
             case _:
                 return False
+
+        return _permission in self.permissions or any(
+            _permission in role.permissions for role in self.roles
+        )

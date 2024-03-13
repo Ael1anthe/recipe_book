@@ -22,18 +22,14 @@ class Rule:
     ) -> None:
         self.name = name
         self.rule = rule
-        res = Rule._register(self)
-        match res:
-            case Err(_):
-                raise RuleAlreadyExists
 
     @classmethod
-    def create(cls, name: str, rule: Callable[..., bool]) -> "Rule":
+    def create(cls, name: str, rule: Callable[..., bool]) -> Result["Rule", str]:
         """Instanciate a new rule"""
-        return Rule(name, rule)
+        return cls.register(Rule(name, rule))
 
     @classmethod
-    def _register(cls, rule: "Rule") -> Result:
+    def register(cls, rule: "Rule") -> Result:
         """Registers a rule to the global registry"""
         if rule.name in cls._registry:
             return Err("RuleAlreadyExists")
