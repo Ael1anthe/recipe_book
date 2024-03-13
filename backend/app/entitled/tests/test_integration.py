@@ -32,11 +32,6 @@ def test() -> None:
     user_role.permissions = set([create_post, view_post, edit_post, delete_post])
     admin_role.permissions = set([create_post, view_post, edit_post, delete_post])
 
-    assert user_role.permissions == set(
-        [create_post, view_post, edit_post, delete_post]
-    )
-    assert admin_role.permissions == user_role.permissions
-
     user1 = User(login="mathias", email="m.bigaignon@xefi.fr")
     user2 = User(login="gautier", email="g.deleglise@xefi.fr")
     user3 = User(login="alex", email="a.achard@xefi.fr")
