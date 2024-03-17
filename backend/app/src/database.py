@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio.session import AsyncAttrs, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from src.auth.models import DBUser
 from src.config import SETTINGS
+from src.models.users import DBUser
 
 if SETTINGS.DATABASE_URL:
     engine = create_async_engine(SETTINGS.DATABASE_URL.unicode_string(), echo=True)

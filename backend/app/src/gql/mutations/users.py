@@ -1,10 +1,10 @@
 import strawberry
 
 from src.auth.main import get_password_hash
-from src.auth.models import User as UserModel
 from src.database import User as DbUser
 from src.database import get_session
 from src.gql.scalars.users import User
+from src.models.users import User as UserModel
 
 
 @strawberry.type

@@ -1,9 +1,9 @@
 import strawberry
 
-from src.auth import models
+from src.models import users
 
 
-@strawberry.experimental.pydantic.type(model=models.User)
+@strawberry.experimental.pydantic.type(model=users.User)
 class User:
     id: strawberry.auto
     username: strawberry.auto

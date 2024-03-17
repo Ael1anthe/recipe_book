@@ -6,8 +6,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from src.auth.models import TokenData
 from src.database import get_user
+from src.models.tokens import TokenData
 
 SECRET_KEY = "533428c3ead17fb8f54f6d6b88cf5faae01ac983f98c081a5a78329771e35597"
 ALGORITHM = "HS256"
@@ -15,7 +15,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="authenticate")
 
 
 def get_password_hash(password):
